@@ -1,0 +1,10 @@
+inherit_from: .rubocop_todo.yml
+
+AllCops:
+  Exclude:
+    - '**/Rakefile'
+    - '**/**/spec_helper.rb'
+    - '**/*.gemspec'
+
+Documentation:
+  Enabled: false
