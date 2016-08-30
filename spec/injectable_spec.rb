@@ -44,4 +44,14 @@ describe Codependent::Injectable do
       end
     end
   end
+
+  describe '#depends_on' do
+    let(:injectable) { Codependent::Injectable.singleton(:a_value, nil) }
+
+    it 'appends a symbol to the list of dependencies' do
+      injectable.depends_on(:another_key, :and_another_key)
+
+      expect(injectable.dependencies).to eq([:another_key, :and_another_key])
+    end
+  end
 end

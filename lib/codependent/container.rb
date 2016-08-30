@@ -3,31 +3,51 @@ require_relative 'injectable'
 module Codependent
   class Container
     def initialize
-      @registrations = {}
+      @injectables = {}
     end
 
-    def register(symbol, &block)
+    def instance(symbol, &block)
       raise ArgumentError, 'You must provide a block!' unless block
 
-      @registrations[symbol] = Codependent::Injectable.instance(block)
+      injectables[symbol] = Codependent::Injectable.instance(block)
     end
 
-    def register_singleton(symbol, value = nil, &block)
+    def singleton(symbol, value = nil, &block)
       unless block || value
         raise ArgumentError, 'You must provide a value or block'
       end
 
-      @registrations[symbol] = Codependent::Injectable.singleton(value, block)
+      injectables[symbol] = Codependent::Injectable.singleton(value, block)
     end
 
-    def registered?(symbol)
-      @registrations.key?(symbol)
+    def injectable?(symbol)
+      injectables.key?(symbol)
     end
 
     def resolve(symbol)
-      return nil unless @registrations.key?(symbol)
+      return unless injectable?(symbol)
 
-      @registrations[symbol].resolve
+      injectable = injectables[symbol]
+
+      value = injectable.resolve
+
+      injectable.dependencies.each { |dependency| inject!(value, dependency) }
+
+      value
+    end
+
+    private
+
+    attr_reader :injectables
+
+    def to_setter(symbol)
+      "#{symbol}=".to_sym
+    end
+
+    def inject!(value, dependency)
+      return unless injectable?(dependency)
+
+      value.send(to_setter(dependency), injectables[dependency].resolve)
     end
   end
 end

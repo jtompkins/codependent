@@ -10,6 +10,8 @@ module Codependent
       Injectable.new(value, block, true)
     end
 
+    attr_reader :dependencies
+
     def resolve
       return value if value
 
@@ -20,12 +22,19 @@ module Codependent
       end
     end
 
+    def depends_on(*args)
+      dependencies.concat(args)
+
+      self
+    end
+
     private
 
     def initialize(value, block, singleton)
       @value = value
       @block = block
       @singleton = singleton
+      @dependencies = []
     end
 
     attr_reader :value, :block
