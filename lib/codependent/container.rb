@@ -2,6 +2,32 @@ require_relative 'injectable'
 
 module Codependent
   class Container
+    class << self
+      def reset_scopes
+        @scopes = {
+          global: Container.new
+        }
+      end
+
+      def add_scope(scope, container = Container.new)
+        reset_scopes unless scopes
+
+        return scopes[scope] if scopes.key?(scope)
+
+        scopes[scope] = container
+      end
+
+      def method_missing(method)
+        return unless scopes.key?(method)
+
+        scopes[method]
+      end
+
+      private
+
+      attr_reader :scopes
+    end
+
     def initialize
       @injectables = {}
     end

@@ -1,7 +1,48 @@
+require 'spec_helper'
 require 'codependent'
 
 describe Codependent::Container do
   subject(:container) { Codependent::Container.new }
+
+  describe '.reset_scopes' do
+    it 'removes all scopes except the global scope' do
+      Codependent::Container.add_scope(:test)
+
+      scopes = Codependent::Container.instance_variable_get(:@scopes)
+
+      expect(scopes.key?(:test)).to be_truthy
+
+      Codependent::Container.reset_scopes
+
+      scopes = Codependent::Container.instance_variable_get(:@scopes)
+
+      expect(scopes.key?(:test)).to be_falsey
+    end
+  end
+
+  describe '.add_scope' do
+    before do
+      Codependent::Container.reset_scopes
+    end
+
+    it 'adds a new scope to the container' do
+      Codependent::Container.add_scope(:test)
+
+      scopes = Codependent::Container.instance_variable_get(:@scopes)
+
+      expect(scopes.key?(:test)).to be_truthy
+    end
+
+    it 'makes the new scope accessible through a method call' do
+      Codependent::Container.add_scope(:test)
+
+      expect(Codependent::Container.test).to be_a(Codependent::Container)
+    end
+
+    it 'returns nil for a scope that isn\'t defined' do
+      expect(Codependent::Container.test).to be_falsey
+    end
+  end
 
   describe '#injectable?' do
     it 'returns true if the given symbol is defined in the container' do

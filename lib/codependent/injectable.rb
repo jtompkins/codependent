@@ -1,5 +1,3 @@
-require 'pry'
-
 module Codependent
   class Injectable
     def self.instance(block)
