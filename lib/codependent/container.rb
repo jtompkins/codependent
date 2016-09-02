@@ -52,17 +52,18 @@ module Codependent
       injectables.key?(id)
     end
 
-    def resolve(id)
+    def resolve(id, resolved = {})
       return unless injectable?(id)
+      return resolved[id] if resolved.key?(id)
 
       injectable = injectables[id]
-      value = injectable.value
+      resolved[id] = injectable.value
 
-      injectable.dependencies.each do |dependency_id|
-        value.send(to_setter(dependency_id), resolve(dependency_id))
+      injectable.dependencies.each do |dep_id|
+        resolved[id].send(to_setter(dep_id), resolve(dep_id, resolved))
       end
 
-      value
+      resolved[id]
     end
 
     private

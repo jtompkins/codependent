@@ -135,6 +135,24 @@ describe Codependent::Container do
           expect(value.second_testable.third_testable).to be_a(ThirdTestable)
           expect(value.second_testable.third_testable.logger).to eq(:a_logger)
         end
+
+        it 'handles circular dependencies' do
+          FourthTestable = Struct.new(:fifth_testable)
+          FifthTestable = Struct.new(:fourth_testable)
+
+          container
+            .instance(:fourth_testable) { FourthTestable.new }
+            .depends_on(:fifth_testable)
+
+          container
+            .instance(:fifth_testable) { FifthTestable.new }
+            .depends_on(:fourth_testable)
+
+          value = container.resolve(:fourth_testable)
+
+          expect(value).to be_a(FourthTestable)
+          expect(value.fifth_testable).to be_a(FifthTestable)
+        end
       end
     end
   end
