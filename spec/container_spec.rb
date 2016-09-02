@@ -109,6 +109,32 @@ describe Codependent::Container do
 
           expect(value.logger).to eq(:a_logger)
         end
+
+        it 'handles nested dependencies' do
+          FirstTestable = Struct.new(:second_testable)
+          SecondTestable = Struct.new(:third_testable)
+          ThirdTestable = Struct.new(:logger)
+
+          container.singleton(:logger, :a_logger)
+
+          container
+            .instance(:first_testable) { FirstTestable.new }
+            .depends_on(:second_testable)
+
+          container
+            .instance(:second_testable) { SecondTestable.new }
+            .depends_on(:third_testable)
+
+          container
+            .instance(:third_testable) { ThirdTestable.new }
+            .depends_on(:logger)
+
+          value = container.resolve(:first_testable)
+
+          expect(value.second_testable).to be_a(SecondTestable)
+          expect(value.second_testable.third_testable).to be_a(ThirdTestable)
+          expect(value.second_testable.third_testable.logger).to eq(:a_logger)
+        end
       end
     end
   end

@@ -1,41 +1,37 @@
 module Codependent
   class Injectable
-    def self.instance(block)
-      Injectable.new(nil, block, false)
+    def self.instance(constructor)
+      Injectable.new(nil, constructor, false)
     end
 
-    def self.singleton(value, block)
-      Injectable.new(value, block, true)
+    def self.singleton(value, constructor)
+      Injectable.new(value, constructor, true)
     end
 
     attr_reader :dependencies
 
-    def resolve
-      return value if value
+    def value
+      return @value if @value
 
       if singleton?
-        @value = block.call
+        @value = @constructor.call
       else
-        block.call
+        @constructor.call
       end
     end
 
     def depends_on(*args)
       dependencies.concat(args)
-
-      self
     end
 
     private
 
-    def initialize(value, block, singleton)
+    def initialize(value, constructor, singleton)
       @value = value
-      @block = block
+      @constructor = constructor
       @singleton = singleton
       @dependencies = []
     end
-
-    attr_reader :value, :block
 
     def singleton?
       @singleton

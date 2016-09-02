@@ -32,32 +32,35 @@ module Codependent
       @injectables = {}
     end
 
-    def instance(symbol, &block)
-      raise ArgumentError, 'You must provide a block!' unless block
-
-      injectables[symbol] = Codependent::Injectable.instance(block)
-    end
-
-    def singleton(symbol, value = nil, &block)
-      unless block || value
-        raise ArgumentError, 'You must provide a value or block'
+    def instance(id, &constructor)
+      unless constructor
+        raise ArgumentError, 'You must provide a constructor block.'
       end
 
-      injectables[symbol] = Codependent::Injectable.singleton(value, block)
+      injectables[id] = Codependent::Injectable.instance(constructor)
     end
 
-    def injectable?(symbol)
-      injectables.key?(symbol)
+    def singleton(id, value = nil, &constructor)
+      unless value || constructor
+        raise ArgumentError, 'You must provide a value or constructor block.'
+      end
+
+      injectables[id] = Codependent::Injectable.singleton(value, constructor)
     end
 
-    def resolve(symbol)
-      return unless injectable?(symbol)
+    def injectable?(id)
+      injectables.key?(id)
+    end
 
-      injectable = injectables[symbol]
+    def resolve(id)
+      return unless injectable?(id)
 
-      value = injectable.resolve
+      injectable = injectables[id]
+      value = injectable.value
 
-      injectable.dependencies.each { |dependency| inject!(value, dependency) }
+      injectable.dependencies.each do |dependency_id|
+        value.send(to_setter(dependency_id), resolve(dependency_id))
+      end
 
       value
     end
@@ -66,14 +69,8 @@ module Codependent
 
     attr_reader :injectables
 
-    def to_setter(symbol)
-      "#{symbol}=".to_sym
-    end
-
-    def inject!(value, dependency)
-      return unless injectable?(dependency)
-
-      value.send(to_setter(dependency), injectables[dependency].resolve)
+    def to_setter(id)
+      "#{id}=".to_sym
     end
   end
 end
