@@ -17,10 +17,14 @@ module Codependent
         scopes[scope] = container
       end
 
-      def method_missing(method)
-        return unless scopes.key?(method)
+      def [](scope)
+        return unless scopes.key?(scope)
 
-        scopes[method]
+        scopes[scope]
+      end
+
+      def method_missing(method)
+        self[method]
       end
 
       private

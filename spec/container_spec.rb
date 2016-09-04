@@ -20,6 +20,18 @@ describe Codependent::Container do
     end
   end
 
+  describe '.[]' do
+    before do
+      Codependent::Container.reset_scopes
+    end
+
+    it 'makes the scope accessible via [] index' do
+      Codependent::Container.add_scope(:test)
+
+      expect(Codependent::Container[:test]).to be_a(Codependent::Container)
+    end
+  end
+
   describe '.add_scope' do
     before do
       Codependent::Container.reset_scopes

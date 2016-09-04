@@ -20,8 +20,8 @@ module Codependent
       end
     end
 
-    def depends_on(*args)
-      dependencies.concat(args)
+    def depends_on(*dependency_ids)
+      dependencies.concat(dependency_ids)
     end
 
     private
