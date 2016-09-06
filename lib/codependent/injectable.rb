@@ -22,6 +22,12 @@ module Codependent
 
     def depends_on(*dependency_ids)
       dependencies.concat(dependency_ids)
+
+      self
+    end
+
+    def depends_on?(dependency_id)
+      dependencies.include?(dependency_id)
     end
 
     private

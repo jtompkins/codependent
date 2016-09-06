@@ -2,36 +2,6 @@ require_relative 'injectable'
 
 module Codependent
   class Container
-    class << self
-      def reset_scopes
-        @scopes = {
-          global: Container.new
-        }
-      end
-
-      def add_scope(scope, container = Container.new)
-        reset_scopes unless scopes
-
-        return scopes[scope] if scopes.key?(scope)
-
-        scopes[scope] = container
-      end
-
-      def [](scope)
-        return unless scopes.key?(scope)
-
-        scopes[scope]
-      end
-
-      def method_missing(method)
-        self[method]
-      end
-
-      private
-
-      attr_reader :scopes
-    end
-
     def initialize
       @injectables = {}
     end
@@ -56,26 +26,18 @@ module Codependent
       injectables.key?(id)
     end
 
-    def resolve(id, resolved = {})
+    def resolve(id)
       return unless injectable?(id)
-      return resolved[id] if resolved.key?(id)
 
-      injectable = injectables[id]
-      resolved[id] = injectable.value
-
-      injectable.dependencies.each do |dep_id|
-        resolved[id].send(to_setter(dep_id), resolve(dep_id, resolved))
-      end
-
-      resolved[id]
+      resolver.resolve(id)
     end
 
     private
 
     attr_reader :injectables
 
-    def to_setter(id)
-      "#{id}=".to_sym
+    def resolver
+      Codependent::DefaultResolver.new(injectables)
     end
   end
 end

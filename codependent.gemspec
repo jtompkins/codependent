@@ -7,7 +7,10 @@ Gem::Specification.new do |s|
   s.email       = 'josh@joshtompkins.com'
   s.files       = [
                     "lib/codependent.rb",
-                    "lib/codependent/container.rb"
+                    "lib/codependent/container.rb",
+                    "lib/codependent/injectable.rb",
+                    "lib/codependent/default_resolver.rb",
+                    "lib/codependent/helper.rb"
                   ]
   s.homepage    =
     'https://github.com/jtompkins/codependent'

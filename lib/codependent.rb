@@ -1,42 +1,40 @@
 require 'codependent/container'
 require 'codependent/injectable'
-require 'pry'
+require 'codependent/default_resolver'
+require 'codependent/helper'
 
 module Codependent
-  module Helper
-    def instance(id, &block)
-      constructor = block || -> { new }
+  def self.reset
+    @scopes = {
+      global: Container.new
+    }
+  end
 
-      @injectable = Codependent::Container[scope].instance(id, &constructor)
-    end
+  def self.scope?(scope_id)
+    reset unless scopes
 
-    def singleton(id, value = nil, &block)
-      if value
-        @injectable = Codependent::Container[scope].singleton(id, value)
-      else
-        constructor = block || -> { new }
-        @injectable = Codependent::Container[scope].singleton(id, &constructor)
-      end
-    end
+    scopes.key?(scope_id)
+  end
 
-    def in_scope(scope_id)
-      @scope = scope_id
-    end
+  def self.scope(scope_id, container = Codependent::Container.new)
+    reset unless scopes
 
-    def depends_on(*dependency_ids)
-      unless injectable
-        raise ArgumentError, 'You must define the injectable first.'
-      end
+    return self[scope_id] if scope?(scope_id)
 
-      injectable.depends_on(*dependency_ids)
-    end
+    scopes[scope_id] = container
+  end
 
-    private
+  def self.[](scope_id)
+    reset unless scopes
 
-    attr_reader :injectable
+    scopes.fetch(scope_id, nil)
+  end
 
-    def scope
-      @scope || :global
-    end
+  def self.global
+    scopes[:global]
+  end
+
+  def self.scopes
+    @scopes
   end
 end
