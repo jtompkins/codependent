@@ -76,7 +76,7 @@ describe Codependent::Helper do
 
           depends_on :logger
         end
-      end.to raise_error
+      end.to raise_error(StandardError)
     end
 
     it 'adds the dependencies to the injectable' do

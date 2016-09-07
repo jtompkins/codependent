@@ -2,24 +2,29 @@ require_relative 'injectable'
 
 module Codependent
   class Container
-    def initialize
+    def initialize(&block)
       @injectables = {}
+
+      instance_eval(&block) if block
     end
 
-    def instance(id, &constructor)
+    def instance(config, &constructor)
       unless constructor
         raise ArgumentError, 'You must provide a constructor block.'
       end
 
-      injectables[id] = Codependent::Injectable.instance(constructor)
+      add_injectable!(config, Codependent::Injectable.instance(constructor))
     end
 
-    def singleton(id, value = nil, &constructor)
+    def singleton(config, value = nil, &constructor)
       unless value || constructor
         raise ArgumentError, 'You must provide a value or constructor block.'
       end
 
-      injectables[id] = Codependent::Injectable.singleton(value, constructor)
+      add_injectable!(
+        config,
+        Codependent::Injectable.singleton(value, constructor)
+      )
     end
 
     def injectable?(id)
@@ -38,6 +43,22 @@ module Codependent
 
     def resolver
       Codependent::DefaultResolver.new(injectables)
+    end
+
+    def parse_config(config)
+      case config
+      when Symbol
+        [config, []]
+      when Hash
+        config.to_a.first
+      end
+    end
+
+    def add_injectable!(config, injectable)
+      id, dependencies = parse_config(config)
+
+      injectable.depends_on(*dependencies) unless dependencies.empty?
+      injectables[id] = injectable
     end
   end
 end
