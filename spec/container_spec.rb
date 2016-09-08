@@ -3,18 +3,22 @@ require 'codependent'
 
 describe Codependent::Container do
   subject(:container) { Codependent::Container.new }
-  let(:id) { :a_symbol }
-  let(:unregistered_id) { :a_different_symbol }
-  let(:value) { :a_value }
 
   describe '#initialize' do
     context 'when a block is given' do
       it 'executes the block with the new instance in scope' do
         container = Codependent::Container.new do
-          instance a_symbol: [:logger] { value }
+          instance :a_symbol do
+            with_constructor { :a_value }
+          end
+
+          singleton :a_singleton do
+            with_value :a_value
+          end
         end
 
-        expect(container.injectable?(id)).to be_truthy
+        expect(container.injectable?(:a_symbol)).to be_truthy
+        expect(container.injectable?(:a_singleton)).to be_truthy
       end
     end
   end
@@ -22,73 +26,86 @@ describe Codependent::Container do
   describe '#injectable?' do
     context 'when the symbol is injectable' do
       it 'returns true' do
-        container.singleton(id, {})
+        container.singleton(:a_symbol) do
+          with_value :a_value
+        end
 
-        expect(container.injectable?(id)).to be_truthy
+        expect(container.injectable?(:a_symbol)).to be_truthy
       end
     end
 
     context 'when the symbol is not injectable' do
       it 'returns false' do
-        expect(container.injectable?(unregistered_id)).to be_falsey
+        expect(container.injectable?(:another_symbol)).to be_falsey
       end
     end
   end
 
   describe '#instance' do
     it 'throws an exception if a block is not given' do
-      expect { container.instance(id) }.to raise_error(ArgumentError)
+      expect { container.instance(:a_symbol) }.to raise_error(ArgumentError)
     end
 
     it 'returns the injectable' do
-      value = container.instance(:a_symbol) { {} }
+      value = container.instance(:a_symbol) do
+        with_constructor { :a_value }
+      end
 
       expect(value).to be_a(Codependent::Injectable)
     end
 
-    context 'when the injectable has no dependencies' do
-      it 'uses the symbol as the key for the injectable' do
-        container.instance(id) { value }
-        expect(container.injectable?(id)).to be_truthy
+    it 'adds the injectable to the list of injectables' do
+      container.instance(:a_symbol) do
+        with_constructor { :a_value }
       end
+
+      expect(container.injectable?(:a_symbol)).to be_truthy
     end
 
-    context 'when the injectable has dependencies' do
-      it 'parses the id and dependencies from the hash' do
-        injectable = container.instance(id => [:logger]) { value }
+    it 'executes the config block to build the injectable' do
+      ran_constructor = false
 
-        expect(container.injectable?(id)).to be_truthy
-        expect(injectable.depends_on?(:logger)).to be_truthy
+      container.instance(:a_symbol) do
+        with_constructor { :a_value }
+
+        ran_constructor = true
       end
+
+      expect(ran_constructor).to be_truthy
     end
   end
 
   describe '#singleton' do
-    it 'throws an exception unless a block or a value is given' do
-      expect { container.singleton(:a_symbol) }
-        .to raise_error(ArgumentError)
+    it 'throws an exception if a block is not given' do
+      expect { container.singleton(:a_symbol) }.to raise_error(ArgumentError)
     end
 
     it 'returns the injectable' do
-      value = container.singleton(:a_symbol, {})
+      value = container.singleton(:a_symbol) do
+        with_value :a_value
+      end
 
       expect(value).to be_a(Codependent::Injectable)
     end
 
-    context 'when the injectable has no dependencies' do
-      it 'uses the symbol as the key for the injectable' do
-        container.singleton(id) { value }
-        expect(container.injectable?(id)).to be_truthy
+    it 'adds the injectable to the list of injectables' do
+      container.singleton(:a_symbol) do
+        with_value :a_value
       end
+
+      expect(container.injectable?(:a_symbol)).to be_truthy
     end
 
-    context 'when the injectable has dependencies' do
-      it 'parses the id and dependencies from the hash' do
-        injectable = container.singleton(id => [:logger]) { value }
+    it 'executes the config block to build the injectable' do
+      ran_constructor = false
 
-        expect(container.injectable?(id)).to be_truthy
-        expect(injectable.depends_on?(:logger)).to be_truthy
+      container.singleton(:a_symbol) do
+        with_value :a_value
+
+        ran_constructor = true
       end
+
+      expect(ran_constructor).to be_truthy
     end
   end
 
@@ -102,7 +119,10 @@ describe Codependent::Container do
     it 'calls the resolver to handle resolution' do
       expect_any_instance_of(Codependent::DefaultResolver).to receive(:resolve)
 
-      container.singleton(:a_symbol, :a_value)
+      container.singleton(:a_symbol) do
+        with_value :a_value
+      end
+
       container.resolve(:a_symbol)
     end
   end

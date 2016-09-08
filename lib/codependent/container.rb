@@ -8,23 +8,20 @@ module Codependent
       instance_eval(&block) if block
     end
 
-    def instance(config, &constructor)
-      unless constructor
-        raise ArgumentError, 'You must provide a constructor block.'
-      end
+    def instance(id, &config_block)
+      validate_config_arguments(config_block)
 
-      add_injectable!(config, Codependent::Injectable.instance(constructor))
+      add_injectable!(id, :instance, config_block)
     end
 
-    def singleton(config, value = nil, &constructor)
-      unless value || constructor
-        raise ArgumentError, 'You must provide a value or constructor block.'
-      end
+    def singleton(id, &config_block)
+      validate_config_arguments(config_block)
 
-      add_injectable!(
-        config,
-        Codependent::Injectable.singleton(value, constructor)
-      )
+      add_injectable!(id, :singleton, config_block)
+    end
+
+    def injectable(id)
+      injectables[id]
     end
 
     def injectable?(id)
@@ -41,24 +38,22 @@ module Codependent
 
     attr_reader :injectables
 
+    def validate_config_arguments(config_block)
+      unless config_block
+        raise ArgumentError, 'You must provide a config block.'
+      end
+    end
+
     def resolver
       Codependent::DefaultResolver.new(injectables)
     end
 
-    def parse_config(config)
-      case config
-      when Symbol
-        [config, []]
-      when Hash
-        config.to_a.first
-      end
-    end
+    def add_injectable!(id, type, config_block)
+      builder = Codependent::InjectableBuilder.new(type)
 
-    def add_injectable!(config, injectable)
-      id, dependencies = parse_config(config)
+      builder.instance_eval(&config_block)
 
-      injectable.depends_on(*dependencies) unless dependencies.empty?
-      injectables[id] = injectable
+      injectables[id] = builder.injectable
     end
   end
 end

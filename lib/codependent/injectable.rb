@@ -1,14 +1,23 @@
 module Codependent
   class Injectable
-    def self.instance(constructor)
-      Injectable.new(nil, constructor, false)
+    def initialize(type, dependencies, value = nil, constructor = nil)
+      @type = type
+      @dependencies = dependencies
+      @value = value
+      @constructor = constructor
     end
 
-    def self.singleton(value, constructor)
-      Injectable.new(value, constructor, true)
+    def depends_on?(dependency_id)
+      @dependencies.include?(dependency_id)
     end
 
-    attr_reader :dependencies
+    def singleton?
+      @type == :singleton
+    end
+
+    def instance?
+      @type == :instance
+    end
 
     def value
       return @value if @value
@@ -18,29 +27,6 @@ module Codependent
       else
         @constructor.call
       end
-    end
-
-    def depends_on(*dependency_ids)
-      dependencies.concat(dependency_ids)
-
-      self
-    end
-
-    def depends_on?(dependency_id)
-      dependencies.include?(dependency_id)
-    end
-
-    private
-
-    def initialize(value, constructor, singleton)
-      @value = value
-      @constructor = constructor
-      @singleton = singleton
-      @dependencies = []
-    end
-
-    def singleton?
-      @singleton
     end
   end
 end
