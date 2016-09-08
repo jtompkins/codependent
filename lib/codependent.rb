@@ -28,7 +28,7 @@ module Codependent
   def self.[](scope_id)
     reset unless scopes
 
-    scopes.fetch(scope_id, nil)
+    scopes[scope_id]
   end
 
   def self.global
