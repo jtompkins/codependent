@@ -1,6 +1,6 @@
 require 'spec_helper'
 require 'codependent'
-
+require 'pry'
 describe Codependent do
   let(:test_scope) { :test }
 
@@ -15,13 +15,24 @@ describe Codependent do
 
         expect(Codependent.scope?(test_scope)).to be_truthy
       end
+
+      it 'passes the optional config block to the new container' do
+        Codependent.scope(test_scope) do
+          singleton :a_singleton do
+            with_value :a_value
+          end
+        end
+
+        expect(Codependent[test_scope].injectable?(:a_singleton))
+          .to be_truthy
+      end
     end
 
     context 'when the scope exists' do
       it 'returns the existing scope' do
-        Codependent.scope(test_scope, :a_container)
+        Codependent.scope(test_scope)
 
-        expect(Codependent.scope(test_scope)).to eq(:a_container)
+        expect(Codependent.scope(test_scope)).to be_a(Codependent::Container)
       end
     end
   end

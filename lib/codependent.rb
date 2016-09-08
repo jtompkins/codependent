@@ -17,12 +17,12 @@ module Codependent
     scopes.key?(scope_id)
   end
 
-  def self.scope(scope_id, container = Codependent::Container.new)
+  def self.scope(scope_id, &config_block)
     reset unless scopes
 
     return self[scope_id] if scope?(scope_id)
 
-    scopes[scope_id] = container
+    scopes[scope_id] = Codependent::Container.new(&config_block)
   end
 
   def self.[](scope_id)
