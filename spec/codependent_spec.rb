@@ -47,6 +47,24 @@ describe Codependent do
     end
   end
 
+  describe '.reset' do
+    it 'rebuilds the container from the config block' do
+      counter = 0
+      config = -> (_) { counter += 1 }
+
+      Codependent.container(test_container, &config)
+      Codependent.reset(test_container)
+
+      expect(counter).to eq(2)
+    end
+
+    it 'returns the new container' do
+      Codependent.container(test_container)
+
+      expect(Codependent.reset(test_container)).to be_a(Codependent::Container)
+    end
+  end
+
   describe '.[]' do
     it 'makes the container accessible via [] index' do
       Codependent.container(test_container)
