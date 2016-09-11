@@ -5,37 +5,33 @@ require 'codependent/default_resolver'
 require 'codependent/helper'
 
 module Codependent
-  def self.reset
-    @scopes = {
-      global: Container.new
-    }
-  end
+  class << self
+    def clear
+      @containers = nil
+    end
 
-  def self.scope?(scope_id)
-    reset unless scopes
+    def container?(container_id)
+      containers.key?(container_id)
+    end
 
-    scopes.key?(scope_id)
-  end
+    def container(container_id, &config_block)
+      return self[container_id] if container?(container_id)
 
-  def self.scope(scope_id, &config_block)
-    reset unless scopes
+      containers[container_id] = Codependent::Container.new(&config_block)
+    end
 
-    return self[scope_id] if scope?(scope_id)
+    def [](container_id)
+      containers[container_id]
+    end
 
-    scopes[scope_id] = Codependent::Container.new(&config_block)
-  end
+    def global
+      containers[:global]
+    end
 
-  def self.[](scope_id)
-    reset unless scopes
+    private
 
-    scopes[scope_id]
-  end
-
-  def self.global
-    scopes[:global]
-  end
-
-  def self.scopes
-    @scopes
+    def containers
+      @containers ||= { global: Codependent::Container.new }
+    end
   end
 end

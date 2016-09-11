@@ -2,70 +2,71 @@ require 'spec_helper'
 require 'codependent'
 require 'pry'
 describe Codependent do
-  let(:test_scope) { :test }
+  let(:test_container) { :test }
 
   before :each do
-    Codependent.reset
+    Codependent.clear
   end
 
-  describe '.scope' do
-    context 'when the scope does not exist' do
-      it 'adds a new scope' do
-        Codependent.scope(test_scope)
+  describe '.container' do
+    context 'when the container does not exist' do
+      it 'adds a new container' do
+        Codependent.container(test_container)
 
-        expect(Codependent.scope?(test_scope)).to be_truthy
+        expect(Codependent.container?(test_container)).to be_truthy
       end
 
       it 'passes the optional config block to the new container' do
-        Codependent.scope(test_scope) do
+        Codependent.container(test_container) do
           singleton :a_singleton do
             with_value :a_value
           end
         end
 
-        expect(Codependent[test_scope].injectable?(:a_singleton))
+        expect(Codependent[test_container].injectable?(:a_singleton))
           .to be_truthy
       end
     end
 
-    context 'when the scope exists' do
-      it 'returns the existing scope' do
-        Codependent.scope(test_scope)
+    context 'when the container exists' do
+      it 'returns the existing container' do
+        Codependent.container(test_container)
 
-        expect(Codependent.scope(test_scope)).to be_a(Codependent::Container)
+        expect(Codependent.container(test_container))
+          .to be_a(Codependent::Container)
       end
     end
   end
 
-  describe '.reset' do
-    it 'removes all scopes except the global scope' do
-      Codependent.scope(test_scope)
-      Codependent.reset
+  describe '.clear' do
+    it 'removes all containers except the global' do
+      Codependent.container(test_container)
+      Codependent.clear
 
-      expect(Codependent.scope?(test_scope)).to be_falsey
+      expect(Codependent.container?(test_container)).to be_falsey
     end
   end
 
   describe '.[]' do
-    it 'makes the scope accessible via [] index' do
-      Codependent.scope(test_scope)
+    it 'makes the container accessible via [] index' do
+      Codependent.container(test_container)
 
-      expect(Codependent[test_scope]).to be_a(Codependent::Container)
+      expect(Codependent[test_container]).to be_a(Codependent::Container)
     end
   end
 
-  describe '.scope?' do
-    context 'when the scope is defined' do
+  describe '.container?' do
+    context 'when the container is defined' do
       it 'returns true' do
-        Codependent.scope(test_scope)
+        Codependent.container(test_container)
 
-        expect(Codependent.scope?(test_scope)).to be_truthy
+        expect(Codependent.container?(test_container)).to be_truthy
       end
     end
 
-    context 'when the scope is not defined' do
+    context 'when the container is not defined' do
       it 'returns false' do
-        expect(Codependent.scope?(test_scope)).to be_falsey
+        expect(Codependent.container?(test_container)).to be_falsey
       end
     end
   end

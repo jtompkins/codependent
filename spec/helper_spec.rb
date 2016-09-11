@@ -3,7 +3,7 @@ require 'codependent'
 
 describe Codependent::Helper do
   before :each do
-    Codependent.scope(:test_scope)
+    Codependent.container(:test_container)
   end
 
   describe '.instance' do
@@ -11,12 +11,13 @@ describe Codependent::Helper do
       Struct.new(:logger) do
         extend Codependent::Helper
 
-        instance :an_instance, in_scope: :test_scope do
+        instance :an_instance, in_container: :test_container do
           with_constructor { :a_value }
         end
       end
 
-      expect(Codependent[:test_scope].injectable?(:an_instance)).to be_truthy
+      expect(Codependent[:test_container].injectable?(:an_instance))
+        .to be_truthy
     end
   end
 
@@ -25,12 +26,13 @@ describe Codependent::Helper do
       Struct.new(:logger) do
         extend Codependent::Helper
 
-        singleton :a_singleton, in_scope: :test_scope do
+        singleton :a_singleton, in_container: :test_container do
           with_value :a_value
         end
       end
 
-      expect(Codependent[:test_scope].injectable?(:a_singleton)).to be_truthy
+      expect(Codependent[:test_container].injectable?(:a_singleton))
+        .to be_truthy
     end
   end
 end
