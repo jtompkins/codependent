@@ -23,6 +23,24 @@ describe Codependent::Container do
     end
   end
 
+  describe '#injectable' do
+    context 'when the injectable exists' do
+      it 'returns the injectable' do
+        container.singleton(:a_symbol) do
+          with_value :a_value
+        end
+
+        expect(container.injectable(:a_symbol)).to be_a(Codependent::Injectable)
+      end
+    end
+
+    context 'when the injectable does not exist' do
+      it 'returns nil' do
+        expect(container.injectable(:a_random_symbol)).to be_nil
+      end
+    end
+  end
+
   describe '#injectable?' do
     context 'when the symbol is injectable' do
       it 'returns true' do

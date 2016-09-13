@@ -46,7 +46,7 @@ module Codependent
     end
 
     def global
-      containers[:global]
+      get_container(:global)
     end
 
     private

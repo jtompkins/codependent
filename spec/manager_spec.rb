@@ -75,6 +75,13 @@ describe Codependent::Manager do
     end
   end
 
+  describe '#global' do
+    it 'returns the global container' do
+      expect(Codependent::Manager.global)
+        .to eq(Codependent::Manager[:global])
+    end
+  end
+
   describe '#container?' do
     context 'when the container is defined' do
       it 'returns true' do
