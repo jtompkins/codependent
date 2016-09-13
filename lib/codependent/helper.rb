@@ -1,4 +1,4 @@
-require_relative 'manager'
+require 'codependent/manager'
 
 module Codependent
   module Helper

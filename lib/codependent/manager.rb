@@ -1,4 +1,4 @@
-require_relative 'container'
+require 'codependent/container'
 
 module Codependent
   class Manager

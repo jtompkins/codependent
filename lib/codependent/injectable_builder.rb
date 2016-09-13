@@ -1,4 +1,4 @@
-require_relative 'injectable'
+require 'codependent/injectable'
 
 module Codependent
   class InjectableBuilder
