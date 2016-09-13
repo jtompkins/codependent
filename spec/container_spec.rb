@@ -135,7 +135,7 @@ describe Codependent::Container do
     end
 
     it 'calls the resolver to handle resolution' do
-      expect_any_instance_of(Codependent::DefaultResolver).to receive(:resolve)
+      expect_any_instance_of(Codependent::Resolver).to receive(:resolve)
 
       container.singleton(:a_symbol) do
         with_value :a_value

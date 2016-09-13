@@ -1,7 +1,7 @@
 require 'spec_helper'
 require 'codependent'
 
-describe Codependent::DefaultResolver do
+describe Codependent::Resolver do
   describe '#resolve' do
     let(:simple_dependency) { double(value: :a_value, dependencies: []) }
     let(:logger) { double(value: :a_logger, dependencies: []) }
@@ -37,7 +37,7 @@ describe Codependent::DefaultResolver do
       }
     end
 
-    subject(:resolver) { Codependent::DefaultResolver.new(injectables) }
+    subject(:resolver) { Codependent::Resolver.new(injectables) }
 
     context 'when the dependency chain is not nested' do
       it 'returns a value from the injectable' do

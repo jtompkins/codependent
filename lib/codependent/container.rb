@@ -45,7 +45,7 @@ module Codependent
     end
 
     def resolver
-      Codependent::DefaultResolver.new(injectables)
+      Codependent::Resolver.new(injectables)
     end
 
     def add_injectable!(id, type, config_block)

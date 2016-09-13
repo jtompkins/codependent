@@ -1,5 +1,5 @@
 module Codependent
-  class DefaultResolver
+  class Resolver
     def initialize(injectables)
       @injectables = injectables
     end
