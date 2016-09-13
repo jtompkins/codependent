@@ -7,6 +7,16 @@ describe Codependent::Helper do
   end
 
   describe '.instance' do
+    it 'raises an error if a block is not supplied' do
+      expect do
+        Struct.new(:logger) do
+          extend Codependent::Helper
+
+          instance :an_instance
+        end
+      end.to raise_error(ArgumentError)
+    end
+
     it 'adds this class as an injectable' do
       Struct.new(:logger) do
         extend Codependent::Helper
@@ -22,6 +32,16 @@ describe Codependent::Helper do
   end
 
   describe '.singleton' do
+    it 'raises an error if a block is not provided' do
+      expect do
+        Struct.new(:logger) do
+          extend Codependent::Helper
+
+          singleton :a_singleton
+        end
+      end.to raise_error(ArgumentError)
+    end
+
     it 'adds this class as an injectable' do
       Struct.new(:logger) do
         extend Codependent::Helper
