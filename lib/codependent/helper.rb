@@ -1,4 +1,4 @@
-require_relative '../codependent'
+require_relative 'manager'
 
 module Codependent
   module Helper
@@ -7,7 +7,7 @@ module Codependent
         raise ArgumentError, 'You must provide a config block.'
       end
 
-      Codependent[in_container].instance(id, &config_block)
+      Codependent::Manager[in_container].instance(id, &config_block)
     end
 
     def singleton(id, in_container: :global, &config_block)
@@ -15,7 +15,7 @@ module Codependent
         raise ArgumentError, 'You must provide a config block.'
       end
 
-      Codependent[in_container].singleton(id, &config_block)
+      Codependent::Manager[in_container].singleton(id, &config_block)
     end
   end
 end

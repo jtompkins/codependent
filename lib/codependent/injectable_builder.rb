@@ -1,3 +1,5 @@
+require_relative 'injectable'
+
 module Codependent
   class InjectableBuilder
     def initialize(type)

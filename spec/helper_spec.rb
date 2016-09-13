@@ -3,7 +3,7 @@ require 'codependent'
 
 describe Codependent::Helper do
   before :each do
-    Codependent.container(:test_container)
+    Codependent::Manager.container(:test_container)
   end
 
   describe '.instance' do
@@ -16,7 +16,7 @@ describe Codependent::Helper do
         end
       end
 
-      expect(Codependent[:test_container].injectable?(:an_instance))
+      expect(Codependent::Manager[:test_container].injectable?(:an_instance))
         .to be_truthy
     end
   end
@@ -31,7 +31,7 @@ describe Codependent::Helper do
         end
       end
 
-      expect(Codependent[:test_container].injectable?(:a_singleton))
+      expect(Codependent::Manager[:test_container].injectable?(:a_singleton))
         .to be_truthy
     end
   end
