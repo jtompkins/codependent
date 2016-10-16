@@ -7,6 +7,8 @@ module Codependent
       @constructor = constructor
     end
 
+    attr_reader :dependencies
+
     def depends_on?(dependency_id)
       @dependencies.include?(dependency_id)
     end

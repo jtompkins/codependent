@@ -5,13 +5,13 @@ describe Codependent::Manager do
   let(:test_container) { :test }
 
   before :each do
-    Codependent::Manager.reset
+    Codependent::Manager.reset!
   end
 
-  describe '.reset_container' do
+  describe '.reset!' do
     it 'removes all containers except the global' do
       Codependent::Manager.container(test_container)
-      Codependent::Manager.reset
+      Codependent::Manager.reset!
 
       expect(Codependent::Manager.container?(test_container)).to be_falsey
     end
@@ -47,13 +47,13 @@ describe Codependent::Manager do
     end
   end
 
-  describe '#reset_container' do
+  describe '#reset_container!' do
     it 'rebuilds the container from the config block' do
       counter = 0
       config = -> (_) { counter += 1 }
 
       Codependent::Manager.container(test_container, &config)
-      Codependent::Manager.reset_container(test_container)
+      Codependent::Manager.reset_container!(test_container)
 
       expect(counter).to eq(2)
     end
@@ -61,7 +61,7 @@ describe Codependent::Manager do
     it 'returns the new container' do
       Codependent::Manager.container(test_container)
 
-      expect(Codependent::Manager.reset_container(test_container))
+      expect(Codependent::Manager.reset_container!(test_container))
         .to be_a(Codependent::Container)
     end
   end

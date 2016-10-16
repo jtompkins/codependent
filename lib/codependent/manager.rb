@@ -9,7 +9,7 @@ module Codependent
         @instance ||= Manager.new
       end
 
-      def reset
+      def reset!
         @instance = nil
       end
 
@@ -24,7 +24,7 @@ module Codependent
       containers.key?(container_id)
     end
 
-    def reset_container(container_id)
+    def reset_container!(container_id)
       return unless container?(container_id)
 
       config_block = containers[container_id][:config]
