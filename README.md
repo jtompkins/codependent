@@ -2,6 +2,8 @@
 
 Codependent is a simple, lightweight dependency injection library for Ruby.
 
+[![Gem Version](https://badge.fury.io/rb/Codependent.png)](https://badge.fury.io/rb/Codependent)
+
 ## Codependent by Example
 
 ### Installation
