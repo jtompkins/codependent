@@ -11,7 +11,6 @@ Gem::Specification.new do |s|
                     "lib/codependent/container.rb",
                     "lib/codependent/injectable.rb",
                     "lib/codependent/resolver.rb",
-                    "lib/codependent/helper.rb",
                     "lib/codependent/injectable_builder.rb"
                   ]
   s.homepage    =
