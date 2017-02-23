@@ -10,8 +10,8 @@ module Codependent
       def resolve(id)
         dependencies = build_dependency_graph(id)
 
-        resolved = build_initial_dependencies(dependencies)
-        apply_deferred_values!(resolved)
+        resolved = resolve_eager_dependencies(dependencies)
+        resolve_deferred_dependencies!(resolved)
 
         resolved[id]
       end
@@ -22,13 +22,13 @@ module Codependent
         injectable.resolver == SetterInjectionResolver
       end
 
-      def build_initial_dependencies(injectable_ids)
+      def resolve_eager_dependencies(injectable_ids)
         injectable_ids.reduce({}) do |acc, id|
           acc.merge(id => resolve_value(id, acc))
         end
       end
 
-      def apply_deferred_values!(available_dependencies)
+      def resolve_deferred_dependencies!(available_dependencies)
         available_dependencies.keys.each do |id|
           injectable = injectables[id]
 
