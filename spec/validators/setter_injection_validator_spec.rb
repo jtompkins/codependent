@@ -7,7 +7,7 @@ end
 describe Codependent::Validators::SetterInjectionValidator do
   let(:type) { :singleton }
 
-  let(:setter_state) { { klass: SettersClass } }
+  let(:setter_state) { { type: SettersClass } }
   let(:bad_state) { {} }
 
   let(:dependencies) { [:a_dependency] }
@@ -17,21 +17,21 @@ describe Codependent::Validators::SetterInjectionValidator do
 
   describe '#call' do
     it 'raises an exception of a class reference is not provided' do
-      expect {
+      expect do
         validator.(type, bad_state, dependencies)
-      }.to raise_error(RuntimeError)
+      end.to raise_error(RuntimeError)
     end
 
     it 'raises an exception if the dependencies do not match the accessors' do
-      expect {
+      expect do
         validator.(type, setter_state, more_dependencies)
-      }.to raise_error(RuntimeError)
+      end.to raise_error(RuntimeError)
     end
 
     it 'does not raise if the class has all of the accessors' do
-      expect {
+      expect do
         validator.(type, setter_state, dependencies)
-      }.to_not raise_error
+      end.to_not raise_error
     end
   end
 end
