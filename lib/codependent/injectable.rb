@@ -1,13 +1,13 @@
 module Codependent
   class Injectable
-    def initialize(type, dependencies, value = nil, constructor = nil)
+    def initialize(type, dependencies, state, resolver)
       @type = type
       @dependencies = dependencies
-      @value = value
-      @constructor = constructor
+      @state = state
+      @resolver = resolver
     end
 
-    attr_reader :dependencies
+    attr_reader :dependencies, :state, :resolver
 
     def depends_on?(dependency_id)
       @dependencies.include?(dependency_id)
@@ -19,16 +19,6 @@ module Codependent
 
     def instance?
       @type == :instance
-    end
-
-    def value
-      return @value if @value
-
-      if singleton?
-        @value = @constructor.call
-      else
-        @constructor.call
-      end
     end
   end
 end
