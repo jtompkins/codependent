@@ -6,17 +6,12 @@ module Codependent
       NO_DEPENDENCIES_ERROR = 'Value injectables may not have dependencies'.freeze
 
       def call(type, state, dependencies)
-        unless type == :singleton
-          raise SINGLETON_ERROR
-        end
+        raise SINGLETON_ERROR unless type == :singleton
+        raise NIL_VALUE_ERROR unless state[:value]
 
-        unless state[:value]
-          raise NIL_VALUE_ERROR
-        end
+        no_dependencies = !dependencies || dependencies.count != 0
 
-        if !dependencies || dependencies.count != 0
-          raise NO_DEPENDENCIES_ERROR
-        end
+        raise NO_DEPENDENCIES_ERROR if no_dependencies
       end
     end
   end

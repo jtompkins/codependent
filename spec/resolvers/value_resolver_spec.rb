@@ -3,13 +3,7 @@ require 'codependent'
 
 describe Codependent::Resolvers::ValueResolver do
   let(:value) { :a_value }
-
-  let(:state) do
-    {
-      value: value,
-    }
-  end
-
+  let(:state) { { value: value } }
   let(:dependencies) { {} }
 
   subject(:resolver) do

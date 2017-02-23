@@ -36,9 +36,9 @@ module Codependent
 
         parameter_names = extract_param_names(params)
 
-        unless params_for_all_dependencies?(dependencies, parameter_names)
-          raise MISSING_DEPENDENCY_KEYWORDS_ERROR
-        end
+        return if params_for_all_dependencies?(dependencies, parameter_names)
+
+        raise MISSING_DEPENDENCY_KEYWORDS_ERROR
       end
     end
   end

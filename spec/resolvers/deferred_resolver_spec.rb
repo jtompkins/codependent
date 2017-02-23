@@ -45,7 +45,7 @@ describe Codependent::Resolvers::DeferredResolver do
         Codependent::Injectable.new(
           :singleton,
           [:simple_dependency],
-          {type: TestClass},
+          { type: TestClass },
           constructor_resolver
         )
       end
