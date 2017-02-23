@@ -1,6 +1,6 @@
 module Codependent
   module Resolvers
-    class SetterInjectionResolver
+    class DeferredTypeResolver
       def call(state, _)
         state[:type].new
       end

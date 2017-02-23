@@ -1,6 +1,6 @@
 module Codependent
   module Resolvers
-    class ConstructorInjectionResolver
+    class EagerTypeResolver
       def call(state, dependency_hash)
         constructor_args = dependency_hash.merge(state[:additional_args] || {})
 

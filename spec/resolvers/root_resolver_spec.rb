@@ -17,13 +17,13 @@ class SetterDependencyB
   attr_accessor :setter_dependency_a
 end
 
-describe Codependent::Resolvers::DeferredResolver do
-  let(:constructor_resolver) do
-    Codependent::Resolvers::ConstructorInjectionResolver
+describe Codependent::Resolvers::RootResolver do
+  let(:eager_resolver) do
+    Codependent::Resolvers::EagerTypeResolver
   end
 
-  let(:setter_resolver) do
-    Codependent::Resolvers::SetterInjectionResolver
+  let(:deferred_resolver) do
+    Codependent::Resolvers::DeferredTypeResolver
   end
 
   let(:value_resolver) do
@@ -46,7 +46,7 @@ describe Codependent::Resolvers::DeferredResolver do
           :singleton,
           [:simple_dependency],
           { type: TestClass },
-          constructor_resolver
+          eager_resolver
         )
       end
 
@@ -58,7 +58,7 @@ describe Codependent::Resolvers::DeferredResolver do
       end
 
       it 'resolves a dependency' do
-        resolver = Codependent::Resolvers::DeferredResolver.new(injectables)
+        resolver = Codependent::Resolvers::RootResolver.new(injectables)
 
         result = resolver.resolve(:nested_dependency)
 
@@ -72,7 +72,7 @@ describe Codependent::Resolvers::DeferredResolver do
           :singleton,
           [:setter_dependency_b],
           { type: SetterDependencyA },
-          setter_resolver
+          deferred_resolver
         )
       end
 
@@ -81,7 +81,7 @@ describe Codependent::Resolvers::DeferredResolver do
           :singleton,
           [:setter_dependency_a],
           { type: SetterDependencyB },
-          setter_resolver
+          deferred_resolver
         )
       end
 
@@ -93,7 +93,7 @@ describe Codependent::Resolvers::DeferredResolver do
       end
 
       it 'resolves a dependency' do
-        resolver = Codependent::Resolvers::DeferredResolver
+        resolver = Codependent::Resolvers::RootResolver
                    .new(setter_injectables)
 
         result = resolver.resolve(:setter_dependency_a)

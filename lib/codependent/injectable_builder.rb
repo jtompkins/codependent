@@ -5,8 +5,8 @@ require 'codependent/validators/provider_validator'
 require 'codependent/validators/constructor_injection_validator'
 require 'codependent/validators/setter_injection_validator'
 
-require 'codependent/resolvers/constructor_injection_resolver'
-require 'codependent/resolvers/setter_injection_resolver'
+require 'codependent/resolvers/eager_type_resolver'
+require 'codependent/resolvers/deferred_type_resolver'
 require 'codependent/resolvers/provider_resolver'
 require 'codependent/resolvers/value_resolver'
 
@@ -40,12 +40,12 @@ module Codependent
       }
 
       @validator = Validators::ConstructorInjectionValidator
-      @resolver = Resolvers::ConstructorInjectionResolver
+      @resolver = Resolvers::EagerTypeResolver
     end
 
     def inject_setters
       @validator = Validators::SetterInjectionValidator
-      @resolver = Resolvers::SetterInjectionResolver
+      @resolver = Resolvers::DeferredTypeResolver
     end
 
     def skip_checks

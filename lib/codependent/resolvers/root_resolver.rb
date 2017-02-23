@@ -1,6 +1,8 @@
+require 'codependent/resolvers/deferred_type_resolver'
+
 module Codependent
   module Resolvers
-    class DeferredResolver
+    class RootResolver
       def initialize(injectables)
         @injectables = injectables
       end
@@ -19,7 +21,7 @@ module Codependent
       private
 
       def deferred?(injectable)
-        injectable.resolver == SetterInjectionResolver
+        injectable.resolver == DeferredTypeResolver
       end
 
       def resolve_eager_dependencies(injectable_ids)

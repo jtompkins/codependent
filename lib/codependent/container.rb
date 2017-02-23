@@ -1,5 +1,5 @@
 require 'codependent/injectable'
-require 'codependent/resolvers/deferred_resolver'
+require 'codependent/resolvers/root_resolver'
 
 module Codependent
   class Container
@@ -42,7 +42,7 @@ module Codependent
     attr_reader :injectables, :singleton_values
 
     def resolver
-      Resolvers::DeferredResolver.new(injectables)
+      Resolvers::RootResolver.new(injectables)
     end
 
     def validate_config_arguments(config_block)

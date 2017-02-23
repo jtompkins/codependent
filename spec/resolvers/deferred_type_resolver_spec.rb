@@ -1,7 +1,7 @@
 require 'spec_helper'
 require 'codependent'
 
-describe Codependent::Resolvers::SetterInjectionResolver do
+describe Codependent::Resolvers::DeferredTypeResolver do
   let(:klass) { double(:klass) }
   let(:instance) { double(:klass_instance) }
 
@@ -14,7 +14,7 @@ describe Codependent::Resolvers::SetterInjectionResolver do
   end
 
   subject(:resolver) do
-    Codependent::Resolvers::SetterInjectionResolver.new
+    Codependent::Resolvers::DeferredTypeResolver.new
   end
 
   before do

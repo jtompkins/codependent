@@ -23,6 +23,17 @@ class ProvidedRepo
   attr_reader :nested_repo
 end
 
+class InjectableA; attr_accessor :injectable_b; end
+
+class InjectableB
+  def initialize(injectable_c:)
+    @injectable_c = injectable_c
+  end
+  attr_reader :injectable_c
+end
+
+class InjectableC; attr_accessor :injectable_a; end
+
 describe Codependent::Container do
   subject(:container) { Codependent::Container.new }
 
@@ -49,6 +60,40 @@ describe Codependent::Container do
       logger = container.resolve(:logger)
 
       expect(nested_repo.simple_repo.logger == logger).to be_truthy
+    end
+  end
+
+  describe 'resolving a complex, circular dependency chain' do
+    before do
+      container.instance :injectable_a do
+        from_type InjectableA
+        inject_setters
+        depends_on :injectable_b
+      end
+
+      container.instance :injectable_b do
+        from_type InjectableB
+        depends_on :injectable_c
+      end
+
+      container.instance :injectable_c do
+        from_type InjectableC
+        inject_setters
+        depends_on :injectable_a
+      end
+    end
+
+    it 'returns a complete dependency graph' do
+      result = container.resolve(:injectable_a)
+
+      expect(result).to be_a(InjectableA)
+      expect(result.injectable_b).to be_a(InjectableB)
+      expect(result.injectable_b.injectable_c).to be_a(InjectableC)
+      expect(result.injectable_b.injectable_c.injectable_a).to be_a(InjectableA)
+
+      dep_a = result.injectable_b.injectable_c.injectable_a
+
+      expect(result).to eq(dep_a)
     end
   end
 

@@ -43,7 +43,7 @@ describe Codependent::InjectableBuilder do
 
     it 'sets the resolver' do
       expect(builder.resolver)
-        .to eq(Codependent::Resolvers::ConstructorInjectionResolver)
+        .to eq(Codependent::Resolvers::EagerTypeResolver)
     end
   end
 
@@ -59,7 +59,7 @@ describe Codependent::InjectableBuilder do
 
     it 'sets the resolver' do
       expect(builder.resolver)
-        .to eq(Codependent::Resolvers::SetterInjectionResolver)
+        .to eq(Codependent::Resolvers::DeferredTypeResolver)
     end
   end
 

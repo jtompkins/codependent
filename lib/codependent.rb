@@ -3,9 +3,9 @@ require 'codependent/container'
 require 'codependent/injectable'
 require 'codependent/injectable_builder'
 
-require 'codependent/resolvers/deferred_resolver'
-require 'codependent/resolvers/constructor_injection_resolver'
-require 'codependent/resolvers/setter_injection_resolver'
+require 'codependent/resolvers/root_resolver'
+require 'codependent/resolvers/eager_type_resolver'
+require 'codependent/resolvers/deferred_type_resolver'
 require 'codependent/resolvers/provider_resolver'
 require 'codependent/resolvers/value_resolver'
 
