@@ -28,7 +28,7 @@ describe Codependent::Manager do
       it 'passes the optional config block to the new container' do
         Codependent::Manager.container(test_container) do
           singleton :a_singleton do
-            with_value :a_value
+            from_value :a_value
           end
         end
 
