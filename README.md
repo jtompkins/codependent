@@ -25,43 +25,64 @@ gem 'codependent'
 ```ruby
 # Let's define some injectable types.
 Logger = Struct.new(:writer)
-UserRepository = Struct.new(:logger)
-AccountRepository = Struct.new(:logger, :user_repository)
+
+class UserRepository
+  def initialize(logger:)
+    @logger = logger
+  end
+
+  attr_reader :logger
+end
+
+class AccountRepository
+  attr_accessor :logger, :user_repository
+end
 
 # Create & configure a container by passing a block to the constructor:
 container = Codependent::Container.new do
   # Transient or "instance" dependencies are configured with a simple
   # DSL.
   instance :logger do
-    # The constructor block will be evaluated each time this dependency
-    # is resolved. Whatever the block returns will be injected.
-    with_constructor { Logger.new }
+    # You can inject simple values:
+    from_value Logger.new
   end
 
-  # Singleton dependencies are supported as well.
+  # You can inject via the constructor:
   singleton :user_repository do
-    # Singletons can be resolved to a constant value.
-    with_value UserRepository.new
-
-    # You can specify nested dependencies, too:
+    from_type UserRepository
     depends_on :logger
-
-    # Codependent works through *Setter Injection*, so you'll need to have
-    # a writable accessor of the same name as the dependency for injection to
-    # occur.
-    # In this case, we need `UserRepository` to have an accessor named `logger`.
   end
 
-  # Singletons can also accept a constructor.
-  singleton :account_repository do
-    with_constructor { AccountRepository.new }
-    # The constructor will be evaluated the first time the dependency is
-    # resolved, and then the value will be re-used afterwards.
+  # Codependent will pass the dependencies to the type's constructor.
+  # The constructor needs to have keyword arguments that match the
+  # type's dependencies. Codependent will raise an error if the keyword
+  # arguments don't match the dependencies.
 
-    # Your type can have more than one dependency. Circular dependencies are
-    # resolved properly.
+  # You can also inject via setters, useful to handle circular dependencies:
+  singleton :account_repository do
+    from_type AccountRepository
+    inject_setters
+
+    # Multiple dependencies are supported:
     depends_on :logger, :user_repository
   end
+
+  # Codependent will call the setters to fill in the dependencies, and will
+  # raise an error if there aren't setters for each dependency.
+
+  # If you have an object with complex constructor requirements, you can
+  # use a provider function:
+  instance :db_connection do
+    # Codependent will pass the dependencies to the provider block in a Hash.
+    from_provider do |deps|
+      DB.open(deps[:connection_string])
+    end
+  end
+
+  # You can disable Codependent's type checking:
+  instance :unchecked_dependency
+    from_type MetaprogammingIsCool
+    skip_checks
 end
 
 # Now that we've got our IoC container all wired up, we can ask it to give
