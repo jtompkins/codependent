@@ -20,5 +20,9 @@ module Codependent
     def instance?
       @type == :instance
     end
+
+    def value(dependencies)
+      resolver.new.(state, dependencies)
+    end
   end
 end

@@ -1,5 +1,5 @@
 require 'codependent/injectable'
-require 'codependent/resolvers/recursive_resolver'
+require 'codependent/resolvers/deferred_resolver'
 
 module Codependent
   class Container
@@ -38,7 +38,7 @@ module Codependent
       if injectable.singleton?
         resolve_singleton(id)
       else
-        resolver.(id)
+        resolve_dependency(id)
       end
     end
 
@@ -46,19 +46,18 @@ module Codependent
 
     attr_reader :injectables, :singleton_values
 
-    def resolver(id)
-      injectables(id).resolver
+    def resolver
+      Resolvers::DeferredResolver.new(injectables)
     end
 
     def resolve_dependency(id)
-      resolver = resolver(id).new(injectables)
-      resolver.(id)
+      resolver.resolve(id)
     end
 
     def resolve_singleton(id)
       return singleton_values[id] if singleton_values.key?(id)
 
-      singleton_values[id] = resolver.(id)
+      singleton_values[id] = resolve_dependency(id)
 
       singleton_values[id]
     end

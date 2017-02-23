@@ -3,7 +3,7 @@ require 'codependent/container'
 require 'codependent/injectable'
 require 'codependent/injectable_builder'
 
-require 'codependent/resolvers/recursive_resolver'
+require 'codependent/resolvers/deferred_resolver'
 require 'codependent/resolvers/constructor_injection_resolver'
 require 'codependent/resolvers/setter_injection_resolver'
 require 'codependent/resolvers/provider_resolver'
