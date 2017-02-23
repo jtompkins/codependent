@@ -4,14 +4,12 @@ module Codependent
       MISSING_TYPE_ERROR = 'Setter injection requires a type to be specified.'.freeze
       MISSING_ACCESSOR_KEYWORDS_ERROR = 'All dependencies must appear as accessors on the class.'.freeze
 
-      def call(type, state, dependencies)
-        unless state[:klass]
-          raise MISSING_TYPE_ERROR
-        end
+      def call(_, state, dependencies)
+        raise MISSING_TYPE_ERROR unless state[:type]
 
         return unless dependencies.count > 0
 
-        validate_setters(state[:klass], dependencies)
+        validate_setters(state[:type], dependencies)
       end
 
       private

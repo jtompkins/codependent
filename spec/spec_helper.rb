@@ -4,11 +4,13 @@ $LOAD_PATH.push(APPLICATION_ROOT + '/lib')
 require 'simplecov'
 SimpleCov.start do
   add_filter "/spec/"
+  add_filter "/spec/resolvers"
+  add_filter "/spec/validators"
 end
 
 require 'bundler/setup'
 Bundler.setup
 
 RSpec.configure do |config|
-  # some (optional) config here
+  config.filter_run_when_matching :focus
 end

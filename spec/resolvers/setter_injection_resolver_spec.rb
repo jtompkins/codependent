@@ -5,15 +5,11 @@ describe Codependent::Resolvers::SetterInjectionResolver do
   let(:instance) { double(:klass_instance) }
 
   let(:state) do
-    {
-      klass: klass,
-    }
+    { type: klass }
   end
 
   let(:dependencies) do
-    {
-      a_dependency: :a_value
-    }
+    { a_dependency: :a_value }
   end
 
   subject(:resolver) do

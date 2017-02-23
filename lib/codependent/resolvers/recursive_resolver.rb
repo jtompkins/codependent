@@ -11,7 +11,7 @@ module Codependent
         injectable = injectables[id]
 
         dependencies = injectable.dependencies.reduce({}) do |deps, dep_id|
-          deps[dep_id] = call(dep_id, resolved)
+          deps.merge(dep_id => call(dep_id, resolved))
         end
 
         resolved[id] = injectable.resolver.new.(injectable.state, dependencies)

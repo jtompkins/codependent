@@ -5,29 +5,38 @@ module Codependent
       MISSING_DEPENDENCY_KEYWORDS_ERROR = 'All dependencies must appear as keyword arguments to the constructor.'.freeze
       NO_ARGS_WITH_DEPENDENCIES_ERROR = 'Constructor injection requires the constructor to receive arguments.'.freeze
 
-      def call(type, state, dependencies)
-        unless state[:klass]
-          raise MISSING_TYPE_ERROR
-        end
+      def call(_, state, dependencies)
+        raise MISSING_TYPE_ERROR unless state[:type]
 
         return unless dependencies.count > 0
 
-        validate_constructor_params(state[:klass], dependencies)
+        validate_constructor_params(state[:type], dependencies)
       end
 
       private
+
+      def all_keywords?(params)
+        params.all? { |p| p[0] == :key || p[0] == :keyreq }
+      end
+
+      def extract_param_names(params)
+        params.map { |p| p[1] }
+      end
+
+      def params_for_all_dependencies?(dependencies, parameter_names)
+        (dependencies - parameter_names).empty?
+      end
 
       def validate_constructor_params(klass, dependencies)
         params = klass.instance_method(:initialize).parameters
 
         raise NO_ARGS_WITH_DEPENDENCIES_ERROR if params.count == 0
 
-        return unless params.all? { |p| p[0] == :key || p[0] == :keyreq }
+        return unless all_keywords?(params)
 
-        dependency_keys = dependencies.map(&:to_s)
-        parameter_keys = params.map { |p| p[1] }
+        parameter_names = extract_param_names(params)
 
-        unless (dependency_keys - parameter_keys).empty?
+        unless params_for_all_dependencies?(dependencies, parameter_names)
           raise MISSING_DEPENDENCY_KEYWORDS_ERROR
         end
       end

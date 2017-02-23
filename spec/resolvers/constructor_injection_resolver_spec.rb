@@ -4,22 +4,18 @@ describe Codependent::Resolvers::ConstructorInjectionResolver do
   let(:klass) { double(:klass) }
 
   let(:simple_state) do
-    {
-      klass: klass,
-    }
+    { type: klass }
   end
 
   let(:state_with_args) do
     {
-      klass: klass,
+      type: klass,
       additional_args: { an_arg: 'value' }
     }
   end
 
   let(:dependencies) do
-    {
-      a_dependency: :a_value
-    }
+    { a_dependency: :a_value }
   end
 
   subject(:resolver) do

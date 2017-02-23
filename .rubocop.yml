@@ -1,10 +1,17 @@
 inherit_from: .rubocop_todo.yml
 
 AllCops:
+  TargetRubyVersion: 2.3
   Exclude:
     - '**/Rakefile'
     - '**/**/spec_helper.rb'
     - '**/*.gemspec'
 
 Documentation:
+  Enabled: false
+
+Style/FrozenStringLiteralComment:
+  Enabled: false
+
+Style/LambdaCall:
   Enabled: false

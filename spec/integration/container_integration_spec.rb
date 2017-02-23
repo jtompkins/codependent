@@ -8,7 +8,7 @@ describe Codependent::Container do
 
       container = Codependent::Container.new do
         singleton :logger do
-          with_constructor { Logger.new }
+          from_value Logger.new
         end
       end
 
@@ -21,7 +21,7 @@ describe Codependent::Container do
 
       container = Codependent::Container.new do
         singleton :logger do
-          with_constructor { Logger.new }
+          from_value Logger.new
         end
 
         singleton :repo do

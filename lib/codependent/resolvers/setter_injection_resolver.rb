@@ -2,9 +2,11 @@ module Codependent
   module Resolvers
     class SetterInjectionResolver
       def call(state, dependency_hash)
-        value = state[:klass].new
+        value = state[:type].new
 
-        dependency_hash.each { |dep_id, dep| value.send(to_setter(dep_id), dep) }
+        dependency_hash.each do |dep_id, dep|
+          value.send(to_setter(dep_id), dep)
+        end
 
         value
       end

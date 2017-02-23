@@ -57,6 +57,8 @@ module Codependent
     end
 
     def build
+      return unless @validator
+
       @validator.new.(@type, @state, @dependencies) unless @skip_checks
 
       Injectable.new(@type, @dependencies, @state, @resolver)
