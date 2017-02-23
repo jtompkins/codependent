@@ -1,47 +1,65 @@
 require 'codependent/injectable'
 
+require 'codependent/validators/value_validator'
+require 'codependent/validators/provider_validator'
+require 'codependent/validators/constructor_injection_validator'
+require 'codependent/validators/setter_injection_validator'
+
+require 'codependent/resolvers/constructor_injection_resolver'
+require 'codependent/resolvers/setter_injection_resolver'
+require 'codependent/resolvers/provider_resolver'
+require 'codependent/resolvers/value_resolver'
+
 module Codependent
   class InjectableBuilder
     def initialize(type)
       @type = type
       @dependencies = []
+      @state = {}
+      @skip_checks = false
     end
 
-    attr_reader :constructor,
-                :dependencies,
-                :type,
-                :value
+    attr_reader :type, :dependencies, :state, :validator, :resolver
 
-    def with_constructor(&constructor)
-      @constructor = constructor
+    def from_value(value)
+      @state = { value: value }
+      @validator = Validators::ValueValidator
+      @resolver = Resolvers::ValueResolver
     end
 
-    def with_value(value)
-      @value = value
+    def from_provider(&block)
+      @state = { provider: block }
+      @validator = Validators::ProviderValidator
+      @resolver = Resolvers::ProviderResolver
+    end
+
+    def from_type(klass, additional_args = nil)
+      @state = {
+        type: klass,
+        additional_args: additional_args
+      }
+
+      @validator = Validators::ConstructorInjectionValidator
+      @resolver = Resolvers::ConstructorInjectionResolver
+    end
+
+    def inject_setters
+      @validator = Validators::SetterInjectionValidator
+      @resolver = Resolvers::SetterInjectionResolver
+    end
+
+    def skip_checks
+      @skip_checks = true
     end
 
     def depends_on(*dependencies)
       @dependencies.concat(dependencies)
     end
 
-    def injectable
-      send("validate_#{type}")
+    def build
+      @validator.new.(@type, @state, @dependencies) unless @skip_checks
 
-      Injectable.new(@type, @dependencies, @value, @constructor)
-    end
-
-    private
-
-    def validate_instance
-      if constructor.nil?
-        raise 'You must provide a constructor for an instance.'
-      end
-    end
-
-    def validate_singleton
-      if constructor.nil? && value.nil?
-        raise 'You must provide a constructor or value for a singleton.'
-      end
+      Injectable.new(@type, @dependencies, @state, @resolver)
     end
   end
 end
