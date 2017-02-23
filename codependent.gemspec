@@ -1,19 +1,11 @@
 Gem::Specification.new do |s|
-  s.name        = 'Codependent'
-  s.version     = '0.1'
-  s.date        = '2016-08-28'
+  s.name        = 'codependent'
+  s.version     = '0.2'
+  s.date        = '2017-02-23'
   s.summary     = "A simple dependency injection library for Ruby."
   s.authors     = ["Joshua Tompkins"]
   s.email       = 'josh@joshtompkins.com'
-  s.files       = [
-                    "lib/codependent.rb",
-                    "lib/codependent/manager.rb",
-                    "lib/codependent/container.rb",
-                    "lib/codependent/injectable.rb",
-                    "lib/codependent/resolver.rb",
-                    "lib/codependent/injectable_builder.rb"
-                  ]
-  s.homepage    =
-    'https://github.com/jtompkins/codependent'
-  s.license       = 'MIT'
+  s.files       = `git ls-files -z`.split("\x0").reject { |f| f.match(%r{^(test|spec|features)/}) }
+  s.homepage    = 'https://github.com/jtompkins/codependent'
+  s.license     = 'MIT'
 end
