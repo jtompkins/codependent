@@ -1,4 +1,5 @@
-require 'codependent/resolvers/value_resolver'
+require 'spec_helper'
+require 'codependent'
 
 describe Codependent::Resolvers::ValueResolver do
   let(:value) { :a_value }

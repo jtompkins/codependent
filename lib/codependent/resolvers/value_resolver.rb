@@ -1,7 +1,7 @@
 module Codependent
   module Resolvers
     class ValueResolver
-      def call(state, dependency_hash)
+      def call(state, _)
         state[:value]
       end
     end

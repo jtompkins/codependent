@@ -1,4 +1,5 @@
-require 'codependent/resolvers/constructor_injection_resolver'
+require 'spec_helper'
+require 'codependent'
 
 describe Codependent::Resolvers::ConstructorInjectionResolver do
   let(:klass) { double(:klass) }

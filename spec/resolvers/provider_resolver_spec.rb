@@ -1,4 +1,5 @@
-require 'codependent/resolvers/provider_resolver'
+require 'spec_helper'
+require 'codependent'
 
 describe Codependent::Resolvers::ProviderResolver do
   let(:block) { -> (deps) { true } }

@@ -1,4 +1,5 @@
-require 'codependent/resolvers/setter_injection_resolver'
+require 'spec_helper'
+require 'codependent'
 
 describe Codependent::Resolvers::SetterInjectionResolver do
   let(:klass) { double(:klass) }
@@ -21,14 +22,20 @@ describe Codependent::Resolvers::SetterInjectionResolver do
   end
 
   describe '#call' do
-    it 'calls the constructor and all of the setters' do
+    it 'calls the constructor' do
       expect(klass).to receive(:new)
 
+      resolver.(state, dependencies)
+    end
+  end
+
+  describe '#apply' do
+    it 'calls the setters' do
       dependencies.each do |key, value|
         expect(instance).to receive("#{key}=".to_sym).with(value)
       end
 
-      resolver.(state, dependencies)
+      resolver.apply(instance, dependencies)
     end
   end
 end
