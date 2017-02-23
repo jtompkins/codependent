@@ -1,9 +1,9 @@
 require 'spec_helper'
 require 'codependent'
 
-class TestLogger; end
+class SetterLogger; end
 
-class TestRepo
+class SetterRepo
   attr_accessor :logger
 end
 
@@ -20,11 +20,12 @@ describe 'Resolving dependencies with constructor injection' do
 
   before do
     container.singleton :logger do
-      from_value TestLogger.new
+      from_type SetterLogger
+      inject_setters
     end
 
     container.instance :repo do
-      from_type TestRepo
+      from_type SetterRepo
       inject_setters
       depends_on :logger
     end
@@ -32,7 +33,7 @@ describe 'Resolving dependencies with constructor injection' do
 
   describe 'resolving a simple dependency' do
     it 'returns a resolved value' do
-      expect(container.resolve(:logger)).to be_a(TestLogger)
+      expect(container.resolve(:logger)).to be_a(SetterLogger)
     end
   end
 
@@ -40,8 +41,8 @@ describe 'Resolving dependencies with constructor injection' do
     it 'returns a resolved value' do
       result = container.resolve(:repo)
 
-      expect(result).to be_a(TestRepo)
-      expect(result.logger).to be_a(TestLogger)
+      expect(result).to be_a(SetterRepo)
+      expect(result.logger).to be_a(SetterLogger)
     end
   end
 
@@ -60,7 +61,7 @@ describe 'Resolving dependencies with constructor injection' do
       end
     end
 
-    fit 'returns a resolved value' do
+    it 'returns a resolved value' do
       result = container.resolve(:circular_repo_a)
 
       expect(result).to be_a(CircularRepoA)
