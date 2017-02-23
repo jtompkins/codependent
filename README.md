@@ -114,7 +114,7 @@ Codependent::Manager.container :my_container do
   # This block is passed to a new container instance and uses the same syntax
   # we've already seen.
   instance :logger do
-    with_constructor { Logger.new }
+    from_value Logger.new
   end
 end
 
@@ -131,33 +131,6 @@ Codependent::Manager.reset_container!(:my_container)
 Codependent::Manager.reset!
 ```
 
-### Class Definition Syntax
-
-```ruby
-# Not everyone wants to configure the container up front. You can define your
-# dependencies in your class definitions with the Codependent Helper.
-class UserRepository
-  extend Codependent::Helper
-
-  # Tell Codependent what to call this injectable and how it should be resolved:
-  singleton :user_repository do
-    # The syntax here is the same as before.
-    with_constructor { self.new }
-    depends_on :logger
-  end
-end
-
-class Logger
-  extend Codependent::Helper
-
-  # You can also specify the managed container into which this type should be
-  # defined:
-  instance :logger, in_container: :my_container do
-    with_constructor { self.new }
-  end
-end
-```
-
 ## Developing Codependent
 
 ### Building from source
@@ -166,5 +139,5 @@ end
 2. Install dependencies: `bundle install`
 3. Run the tests: `bundle exec rake ci`
 4. Build a local copy of the gem: `gem build codependent.gemspec`
-5. Install the gem locally: `gem install ./Codependent-0.1.gem`
+5. Install the gem locally: `gem install ./codependent-0.2.gem`
 6. Don't forget to version-bump the gemspec before publishing!
