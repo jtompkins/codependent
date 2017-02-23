@@ -3,9 +3,10 @@ require 'codependent/resolvers/deferred_resolver'
 
 module Codependent
   class Container
+    CONFIG_BLOCK_MISSING_ERROR = 'You must provide a config block.'.freeze
+
     def initialize(&block)
       @injectables = {}
-      @singleton_values = {}
 
       instance_eval(&block) if block
     end
@@ -33,13 +34,7 @@ module Codependent
     def resolve(id)
       return unless injectable?(id)
 
-      injectable = injectable(id)
-
-      if injectable.singleton?
-        resolve_singleton(id)
-      else
-        resolve_dependency(id)
-      end
+      resolver.resolve(id)
     end
 
     private
@@ -50,22 +45,8 @@ module Codependent
       Resolvers::DeferredResolver.new(injectables)
     end
 
-    def resolve_dependency(id)
-      resolver.resolve(id)
-    end
-
-    def resolve_singleton(id)
-      return singleton_values[id] if singleton_values.key?(id)
-
-      singleton_values[id] = resolve_dependency(id)
-
-      singleton_values[id]
-    end
-
     def validate_config_arguments(config_block)
-      unless config_block
-        raise ArgumentError, 'You must provide a config block.'
-      end
+      raise ArgumentError, CONFIG_BLOCK_MISSING_ERROR unless config_block
     end
 
     def add_injectable!(id, type, config_block)
