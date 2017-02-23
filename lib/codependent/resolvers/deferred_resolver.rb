@@ -8,13 +8,10 @@ module Codependent
       attr_reader :injectables
 
       def resolve(id)
-        graph = build_dependency_graph(id)
-
-        dependencies = graph[:dependencies]
-        deferred = graph[:deferred]
+        dependencies = build_dependency_graph(id)
 
         resolved = build_initial_dependencies(dependencies)
-        apply_deferred_values!(deferred, resolved)
+        apply_deferred_values!(resolved)
 
         resolved[id]
       end
@@ -25,15 +22,18 @@ module Codependent
         injectable.resolver == SetterInjectionResolver
       end
 
-      def build_initial_dependencies(dependencies)
-        dependencies.reduce({}) do |acc, id|
+      def build_initial_dependencies(injectable_ids)
+        injectable_ids.reduce({}) do |acc, id|
           acc.merge(id => resolve_value(id, acc))
         end
       end
 
-      def apply_deferred_values!(deferred, available_dependencies)
-        deferred.each do |id|
+      def apply_deferred_values!(available_dependencies)
+        available_dependencies.keys.each do |id|
           injectable = injectables[id]
+
+          next unless deferred?(injectable)
+
           resolver = injectable.resolver.new
 
           resolver.apply(
@@ -64,13 +64,9 @@ module Codependent
       def build_dependency_graph(id)
         stack = [id]
         dependencies = [id]
-        deferred = []
 
         until stack.empty?
-          current_id = stack.pop
-          current = injectables[current_id]
-
-          deferred.unshift(current_id) if deferred?(current)
+          current = injectables[stack.pop]
 
           current.dependencies.each do |dep_id|
             next if dependencies.include?(dep_id)
@@ -79,7 +75,7 @@ module Codependent
           end
         end
 
-        { dependencies: dependencies, deferred: deferred }
+        dependencies
       end
     end
   end
