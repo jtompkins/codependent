@@ -26,6 +26,32 @@ end
 describe Codependent::Container do
   subject(:container) { Codependent::Container.new }
 
+  describe 'resolving a deeply-nested singleton' do
+    before do
+      container.singleton :logger do
+        from_value Object.new
+      end
+
+      container.instance :simple_repo do
+        from_type SimpleRepo
+        depends_on :logger
+      end
+
+      container.instance :nested_repo do
+        from_type NestedRepo
+        inject_setters
+        depends_on :simple_repo
+      end
+    end
+
+    it 'returns a singleton instance of the logger, even if nested' do
+      nested_repo = container.resolve(:nested_repo)
+      logger = container.resolve(:logger)
+
+      expect(nested_repo.simple_repo.logger == logger).to be_truthy
+    end
+  end
+
   describe 'resolving a dependency chain of different injection types' do
     before do
       container.singleton :logger do
