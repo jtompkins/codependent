@@ -15,6 +15,15 @@ class NestedRepo
   attr_accessor :simple_repo
 end
 
+class DuplicatedDependency
+  def initialize(nested_repo:, logger:)
+    @nested_repo = nested_repo
+    @logger = logger
+  end
+
+  attr_reader :nested_repo, :logger
+end
+
 class ProvidedRepo
   def initialize(nested_repo)
     @nested_repo = nested_repo
@@ -60,6 +69,44 @@ describe Codependent::Container do
       logger = container.resolve(:logger)
 
       expect(nested_repo.simple_repo.logger == logger).to be_truthy
+    end
+  end
+
+  describe 'resolving a chain where many classes have the same dependency' do
+    before do
+      container.singleton :logger do
+        from_type TestLogger
+      end
+
+      container.instance :simple_repo do
+        from_type SimpleRepo
+        depends_on :logger
+      end
+
+      container.instance :nested_repo do
+        from_type NestedRepo
+        inject_setters
+        depends_on :simple_repo
+      end
+
+      container.instance :duplicated_repo do
+        from_type DuplicatedDependency
+        depends_on :nested_repo, :logger
+      end
+    end
+
+    it 'returns a complete dependency graph' do
+      result = container.resolve(:duplicated_repo)
+
+      expect(result).to be_a(DuplicatedDependency)
+      expect(result.nested_repo).to be_a(NestedRepo)
+      expect(result.logger).to be_a(TestLogger)
+
+      simple_repo = result.nested_repo.simple_repo
+
+      expect(simple_repo).to be_a(SimpleRepo)
+      expect(simple_repo.logger).to be_a(TestLogger)
+      expect(result.logger).to eq(simple_repo.logger)
     end
   end
 

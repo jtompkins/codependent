@@ -26,7 +26,8 @@ module Codependent
 
       def resolve_eager_dependencies(injectable_ids)
         injectable_ids.reduce({}) do |acc, id|
-          acc.merge(id => resolve_value(id, acc))
+          next acc if acc.key?(id)
+          acc.tap { |hash| hash[id] = resolve_value(id, acc) }
         end
       end
 
@@ -71,9 +72,8 @@ module Codependent
           current = injectables[stack.pop]
 
           current.dependencies.each do |dep_id|
-            next if dependencies.include?(dep_id)
+            stack.push(dep_id) unless dependencies.include?(dep_id)
             dependencies.unshift(dep_id)
-            stack.push(dep_id)
           end
         end
 
