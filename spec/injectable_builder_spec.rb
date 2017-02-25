@@ -115,7 +115,7 @@ describe Codependent::InjectableBuilder do
     end
   end
 
-  describe '#injectable' do
+  describe '#build' do
     let(:validator) { double(:value_validator) }
 
     before do
@@ -143,6 +143,22 @@ describe Codependent::InjectableBuilder do
         expect(validator).to_not receive(:call)
 
         builder.build
+      end
+    end
+
+    context 'when a validator fails' do
+      it 're-raises an exception with a descriptive message' do
+        allow(builder.validator)
+          .to receive(:new)
+          .and_return(validator)
+
+        allow(validator)
+          .to receive(:call)
+          .and_raise(Codependent::Errors::MissingTypeError)
+
+        expect { builder.build }
+          .to raise_error(StandardError)
+          .with_message(/#{id}/)
       end
     end
   end
