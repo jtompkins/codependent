@@ -1,4 +1,5 @@
 require 'codependent/injectable'
+require 'codependent/errors'
 
 require 'codependent/validators/value_validator'
 require 'codependent/validators/provider_validator'
@@ -12,14 +13,15 @@ require 'codependent/resolvers/value_resolver'
 
 module Codependent
   class InjectableBuilder
-    def initialize(type)
+    def initialize(id, type)
+      @id = id
       @type = type
       @dependencies = []
       @state = {}
       @skip_checks = false
     end
 
-    attr_reader :type, :dependencies, :state, :validator, :resolver
+    attr_reader :id, :type, :dependencies, :state, :validator, :resolver
 
     def from_value(value)
       @state = { value: value }
@@ -59,9 +61,17 @@ module Codependent
     def build
       return unless @validator
 
-      @validator.new.(@type, @state, @dependencies) unless @skip_checks
+      validate unless @skip_checks
 
       Injectable.new(@type, @dependencies, @state, @resolver)
+    end
+
+    private
+
+    def validate
+      @validator.new.(@type, @state, @dependencies)
+    rescue Codependent::Errors::CodependentError => e
+      raise "#{e.message} Check the configuration for #{id}."
     end
   end
 end

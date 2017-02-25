@@ -1,4 +1,5 @@
-require 'codependent/validators/constructor_injection_validator'
+require 'spec_helper'
+require 'codependent'
 
 class KeywordClass
   def initialize(a_dependency:); end
@@ -35,19 +36,19 @@ describe Codependent::Validators::ConstructorInjectionValidator do
     it 'raises an exception of a class reference is not provided' do
       expect do
         validator.(type, bad_state, dependencies)
-      end.to raise_error(RuntimeError)
+      end.to raise_error(Codependent::Errors::MissingTypeError)
     end
 
     it 'raises an exception if the dependencies do not match the keyword args' do
       expect do
         validator.(type, simple_state, dependencies)
-      end.to raise_error(RuntimeError)
+      end.to raise_error(Codependent::Errors::MissingKeywordArgError)
     end
 
     it 'raises an exception if initializer takes no args but has dependencies' do
       expect do
         validator.(type, no_args_state, dependencies)
-      end.to raise_error(RuntimeError)
+      end.to raise_error(Codependent::Errors::NoConstructorArgsError)
     end
 
     it 'does not raise if the class has a no-arg initializer and no dependencies' do

@@ -2,6 +2,7 @@ require 'codependent/manager'
 require 'codependent/container'
 require 'codependent/injectable'
 require 'codependent/injectable_builder'
+require 'codependent/errors'
 
 require 'codependent/resolvers/root_resolver'
 require 'codependent/resolvers/eager_type_resolver'

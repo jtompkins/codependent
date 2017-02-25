@@ -1,12 +1,10 @@
+require 'codependent/errors'
+
 module Codependent
   module Validators
     class ConstructorInjectionValidator
-      MISSING_TYPE_ERROR = 'Constructor injection requires a type to be specified.'.freeze
-      MISSING_DEPENDENCY_KEYWORDS_ERROR = 'All dependencies must appear as keyword arguments to the constructor.'.freeze
-      NO_ARGS_WITH_DEPENDENCIES_ERROR = 'Constructor injection requires the constructor to receive arguments.'.freeze
-
       def call(_, state, dependencies)
-        raise MISSING_TYPE_ERROR unless state[:type]
+        raise Codependent::Errors::MissingTypeError unless state[:type]
 
         return unless dependencies.count > 0
 
@@ -30,7 +28,7 @@ module Codependent
       def validate_constructor_params(klass, dependencies)
         params = klass.instance_method(:initialize).parameters
 
-        raise NO_ARGS_WITH_DEPENDENCIES_ERROR if params.count == 0
+        raise Codependent::Errors::NoConstructorArgsError if params.count == 0
 
         return unless all_keywords?(params)
 
@@ -38,7 +36,7 @@ module Codependent
 
         return if params_for_all_dependencies?(dependencies, parameter_names)
 
-        raise MISSING_DEPENDENCY_KEYWORDS_ERROR
+        raise Codependent::Errors::MissingKeywordArgError
       end
     end
   end

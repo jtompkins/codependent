@@ -50,7 +50,7 @@ module Codependent
     end
 
     def add_injectable!(id, type, config_block)
-      builder = Codependent::InjectableBuilder.new(type)
+      builder = Codependent::InjectableBuilder.new(id, type)
 
       builder.instance_eval(&config_block)
 

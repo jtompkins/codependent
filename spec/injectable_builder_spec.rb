@@ -4,17 +4,18 @@ require 'codependent'
 class TestClass; end
 
 describe Codependent::InjectableBuilder do
+  let(:id) { :test_id }
   let(:instance) { :instance }
   let(:dependencies) { [:dependency] }
 
   let(:value) { :a_value }
   let(:value_state) { { value: value } }
 
-  subject(:builder) { Codependent::InjectableBuilder.new(:singleton) }
+  subject(:builder) { Codependent::InjectableBuilder.new(id, :singleton) }
 
   describe '#initialize' do
     it 'sets the type' do
-      a_builder = Codependent::InjectableBuilder.new(instance)
+      a_builder = Codependent::InjectableBuilder.new(id, instance)
 
       expect(a_builder.type).to eq(:instance)
     end

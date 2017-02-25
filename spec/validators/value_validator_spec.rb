@@ -1,4 +1,5 @@
-require 'codependent/validators/value_validator'
+require 'spec_helper'
+require 'codependent'
 
 describe Codependent::Validators::ValueValidator do
   let(:state) do
@@ -22,19 +23,19 @@ describe Codependent::Validators::ValueValidator do
     it 'raises an exception if the injectable is not a singleton' do
       expect do
         validator.(:instance, state, no_dependencies)
-      end.to raise_error(RuntimeError)
+      end.to raise_error(Codependent::Errors::ValueOnInstanceError)
     end
 
     it 'raises an exception if the value is nil' do
       expect do
         validator.(:singleton, nil_value_state, no_dependencies)
-      end.to raise_error(RuntimeError)
+      end.to raise_error(Codependent::Errors::NoValueError)
     end
 
     it 'raises an exception if any dependencies are specified' do
       expect do
         validator.(:singleton, state, dependencies)
-      end.to raise_error(RuntimeError)
+      end.to raise_error(Codependent::Errors::ValueDependencyError)
     end
   end
 end

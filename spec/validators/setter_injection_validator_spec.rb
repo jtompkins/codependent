@@ -1,4 +1,5 @@
-require 'codependent/validators/setter_injection_validator'
+require 'spec_helper'
+require 'codependent'
 
 class SettersClass
   attr_accessor :a_dependency
@@ -19,13 +20,13 @@ describe Codependent::Validators::SetterInjectionValidator do
     it 'raises an exception of a class reference is not provided' do
       expect do
         validator.(type, bad_state, dependencies)
-      end.to raise_error(RuntimeError)
+      end.to raise_error(Codependent::Errors::MissingTypeError)
     end
 
     it 'raises an exception if the dependencies do not match the accessors' do
       expect do
         validator.(type, setter_state, more_dependencies)
-      end.to raise_error(RuntimeError)
+      end.to raise_error(Codependent::Errors::MissingAccessorError)
     end
 
     it 'does not raise if the class has all of the accessors' do
