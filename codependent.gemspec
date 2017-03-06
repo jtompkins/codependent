@@ -1,7 +1,7 @@
 Gem::Specification.new do |s|
   s.name        = 'codependent'
-  s.version     = '0.3'
-  s.date        = '2017-02-24'
+  s.version     = '0.4'
+  s.date        = '2017-03-05'
   s.summary     = "A simple dependency injection library for Ruby."
   s.authors     = ["Joshua Tompkins"]
   s.email       = 'josh@joshtompkins.com'

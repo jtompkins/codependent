@@ -15,6 +15,27 @@ describe Codependent::Container do
 
         expect(instance_type).to eq(Codependent::Container)
       end
+
+      context 'when args are provided' do
+        it 'passes the args to the block' do
+          test_args = nil
+
+          Codependent::Container.new(key: :value) do |args|
+            test_args = args
+          end
+
+          expect(test_args[:key]).to eq(:value)
+        end
+      end
+
+      context 'when no args are provided' do
+        it 'allows the block to not receive args' do
+          expect do
+            Codependent::Container.new do
+            end
+          end.to_not raise_error
+        end
+      end
     end
   end
 

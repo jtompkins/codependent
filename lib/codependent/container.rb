@@ -5,10 +5,10 @@ module Codependent
   class Container
     CONFIG_BLOCK_MISSING_ERROR = 'You must provide a config block.'.freeze
 
-    def initialize(&block)
+    def initialize(args = {}, &block)
       @injectables = {}
 
-      instance_eval(&block) if block
+      instance_exec(args, &block) if block
     end
 
     def instance(id, &config_block)
